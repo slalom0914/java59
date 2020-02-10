@@ -15,6 +15,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class BaseBallGameView {
+	BaseBallGameLogic bbLogic = new BaseBallGameLogic();
 	//화면과 관련된 코드 추가 시작
 	JFrame   jf_bbgame = new JFrame();
 	//JMenuBar는 JFrame안에 메뉴바를 추가하기
@@ -25,6 +26,7 @@ public class BaseBallGameView {
 	JMenuItem jmi_next  = new JMenuItem("다음겜");
 	JMenuItem jmi_clear  = new JMenuItem("지우기");
 	JMenuItem jmi_dap 	 = new JMenuItem("정답");
+	JMenuItem jmi_oracle = new JMenuItem("오라클테스트");
 	JMenuItem jmi_exit   = new JMenuItem("나가기");
 	JMenu    jm_info	= new JMenu("도움말");
 	JTextArea jta_display = new JTextArea("");
@@ -41,6 +43,7 @@ public class BaseBallGameView {
 	public BaseBallGameView() {
 	//생성자 안에서 메소드를 호출하면 인스턴스화 없이도 호출이 가능함.
 		initDisplay();
+		bbLogic.ranCom();
 	}	
 	////////////////////// 화면처리 시작 /////////////////////
 	public void initDisplay() {
@@ -52,8 +55,11 @@ public class BaseBallGameView {
 		//파라미터가 있는 생성자는 내가 대신해 줄 수 없다. 왜냐면 네 생각을 난 알수없으니까..
 		BaseBallGameEvent bbEvent = new BaseBallGameEvent(this);
 		jtf_input.addActionListener(bbEvent);
+		jbtn_clear.addActionListener(bbEvent);
+		jbtn_dap.addActionListener(bbEvent);
 		jbtn_next.addActionListener(bbEvent);
 		jbtn_exit.addActionListener(bbEvent);
+		jmi_oracle.addActionListener(bbEvent);
 		jmi_exit.addActionListener(bbEvent);
 		//System.out.println("화면 처리 시작");
 		jp_center.setLayout(new BorderLayout());
@@ -78,6 +84,7 @@ public class BaseBallGameView {
 		jm_game.add(jmi_next);
 		jm_game.add(jmi_clear);
 		jm_game.add(jmi_dap);
+		jm_game.add(jmi_oracle);
 		jm_game.add(jmi_exit);
 		//메뉴를 메뉴바에 붙여요
 		jmb_bbgame.add(jm_game);
