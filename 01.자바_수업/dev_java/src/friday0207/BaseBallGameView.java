@@ -40,10 +40,14 @@ public class BaseBallGameView {
 	JPanel 	   jp_center  = new JPanel();
 	//버튼 4개를 붙일 속지 추가하기
 	JPanel 	   jp_east    = new JPanel();
-	public BaseBallGameView() {
+	String mem_name = null;
+	public BaseBallGameView(String mem_name) {
+		System.out.println("로그인 정보 "+mem_name);
 	//생성자 안에서 메소드를 호출하면 인스턴스화 없이도 호출이 가능함.
-		initDisplay();
-		bbLogic.ranCom();
+		if(mem_name!=null) {
+			initDisplay();
+			bbLogic.ranCom();			
+		}
 	}	
 	////////////////////// 화면처리 시작 /////////////////////
 	public void initDisplay() {
@@ -97,7 +101,7 @@ public class BaseBallGameView {
 	}	
 	////////////////////// 화면처리  끝  /////////////////////
 	public static void main(String[] args) {
-		new BaseBallGameView();
+		new BaseBallGameView(null);
 	}
 
 }

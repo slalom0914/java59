@@ -13,6 +13,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -42,23 +43,48 @@ public class LoginForm implements ActionListener {
 	//로그인 처리 메소드 구현
 	public String login(String u_id, String u_pw) {
 		String mem_name = null;
-		String sql  = "";
+		String status = null;
+		StringBuilder sb = new StringBuilder("");
+		StringBuilder sb2 = new StringBuilder("");
 		try {
-			sql+="SELECT mem_name  ";
-			sql+="  FROM member5   ";
-			sql+=" WHERE mem_id=?";
-			sql+="   AND mem_pw=?";			
+			sb.append(" SELECT                          ");
+		    sb.append("       nvl((SELECT 1 FROM member5");
+		    sb.append("             WHERE mem_id=?)     ");
+		    sb.append("           ,-1) status           ");
+		    sb.append(" FROM dual	                    ");
 			con = dbMgr.getConnection();
-			pstmt = con.prepareStatement(sql);
+			pstmt = con.prepareStatement(sb.toString());
 			pstmt.setString(1, u_id);
-			pstmt.setString(2, u_pw);
 			rs = pstmt.executeQuery();
 			if(rs.next()) {//조회가 결과가 있는거야?
-				mem_name = rs.getString("mem_name");
+				status = rs.getString("status");
 			}
-			System.out.println("mem_name:"+mem_name);
+			System.out.println("status:"+status);
+			if("1".equals(status)) {//아이디가 존재하니?
+				sb2.append("SELECT                                ");
+			    sb2.append("   NVL((SELECT mem_name               ");
+			    sb2.append("          FROM member5                ");
+			    sb2.append("         WHERE mem_id=?             ");
+			    sb2.append("           AND mem_pw=?),0) mem_name");
+			    sb2.append(" FROM dual				             ");
+			    pstmt = null;
+			    pstmt = con.prepareStatement(sb2.toString());
+				pstmt.setString(1, u_id);
+				pstmt.setString(2, u_pw);
+				rs = null;
+				rs = pstmt.executeQuery();
+				if(rs.next()) {
+					mem_name = rs.getString("mem_name");
+				}
+				if(mem_name.equals("0")) {
+					mem_name = "비밀번호가 맞지 않습니다.";
+				}
+			}
+			else if("-1".equals(status)){//아이디가 없는건가?
+				mem_name="아이디가 존재하지 않습니다.";
+			}
 		} catch (Exception e) {
-			System.out.println("sql:"+sql);
+			System.out.println("sql:"+sb.toString());
 			System.out.println(e.toString());//예외가 발생되면 힌트를 얻을 수 있어요.
 		}
 		return mem_name;
@@ -101,8 +127,13 @@ public class LoginForm implements ActionListener {
 			String u_pw = jtf_pw.getText();//텍스트필드에 입력한 비번
 			String mem_name = login(u_id,u_pw);
 			System.out.println("mem_name : "+mem_name);
-			if(mem_name!=null) {
-				new BaseBallGameView();
+			if(mem_name.equals("비밀번호가 맞지 않습니다.") 
+			 ||mem_name.equals("아이디가 존재하지 않습니다.")) {
+				JOptionPane.showMessageDialog(jf_login, mem_name);
+				return;
+			}
+			else {
+				new BaseBallGameView(mem_name);
 				jf_login.dispose();
 			}
 		}
