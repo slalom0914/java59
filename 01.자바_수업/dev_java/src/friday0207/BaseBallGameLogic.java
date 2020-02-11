@@ -15,7 +15,7 @@ public class BaseBallGameLogic {
 	int com[] = new int[3];
 	//사용자가 입력한 숫자를 담는 배열
 	int my[] = new int[3];
-	public void history(BaseballVO bVO) {
+	public int history(BaseballVO bVO) {
 		String sql = "";
 		sql+="insert into baseball(game_no, game_seq,game_date";
         sql+="        ,input, hint, dap                       ";
@@ -41,6 +41,7 @@ public class BaseBallGameLogic {
         } catch (Exception e) {
 			System.out.println("Exception" + e.toString());
 		}
+        return result;
 	}
 	/***********************************************************
 	 * 세자리 입력한 숫자에 대한 힌트문 구현하기

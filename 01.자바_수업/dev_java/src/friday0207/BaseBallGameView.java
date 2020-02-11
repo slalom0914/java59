@@ -41,10 +41,23 @@ public class BaseBallGameView {
 	//버튼 4개를 붙일 속지 추가하기
 	JPanel 	   jp_east    = new JPanel();
 	String mem_name = null;
-	public BaseBallGameView(String mem_name) {
-		System.out.println("로그인 정보 "+mem_name);
+	String result[] = null;
+	//전역변수를 선언하여 문제를 해결할 수 있어요.
+	//생성자의 파라미터로 배열의 주소번지를 받게 되는데 이 값을 사용하는 곳이
+	//생성자 안에서가 아니라 initDisplay메소드 안에 setTitle메소드에서
+	//사용해야 하기 때문에 파라미터로 넘어온 값을 반드시 전변과 초기화 해야 합니다.
+	//파라미터자리는 변수를 선언하는 자리 입니다.
+	//초기화는 일어나지 않지요.-생성하는 자리가 아닙니다.
+	public BaseBallGameView(String result[]) {
+		this.result = result;
+		if(this.result==null) {
+			this.result = new String[2];//null
+			this.result[0] = "";			
+			this.result[1] = "";			
+		}
+		System.out.println("로그인 정보 "+this.result[0]+","+this.result[1]);
 	//생성자 안에서 메소드를 호출하면 인스턴스화 없이도 호출이 가능함.
-		if(mem_name!=null) {
+		if(this.result[0]!=null) {
 			initDisplay();
 			bbLogic.ranCom();			
 		}
@@ -95,7 +108,7 @@ public class BaseBallGameView {
 		jmb_bbgame.add(jm_info);		
 		jf_bbgame.setJMenuBar(jmb_bbgame);
 		///////////메뉴바 추가  끝 ////////////
-		jf_bbgame.setTitle("야구숫자게임");
+		jf_bbgame.setTitle("야구숫자게임-"+result[0]+"["+result[1]+"]");
 		jf_bbgame.setSize(300, 200);
 		jf_bbgame.setVisible(true);
 	}	

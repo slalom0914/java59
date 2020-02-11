@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 
+import javax.swing.JOptionPane;
+
 import com.util.DBConnectionMgr;
 
 public class BaseBallGameEvent implements ActionListener {
@@ -66,8 +68,40 @@ public class BaseBallGameEvent implements ActionListener {
 		}
 		//세자리 숫자를 입력했어?
 		else if(obj == bbView.jtf_input) {
+			int no = 0;
 			bbView.jta_display.append(++cnt+"회 : "+bbView.jtf_input.getText()+"==>"+bbView.bbLogic.account(bbView.jtf_input.getText())+"\n");
+			no = cnt;
+			//insert here - 오라클 서버에 insert문 요청 처리하기
+			//수집해야 하는 정보를 출력해보기
+			System.out.println("mem_id : "+bbView.result[1]);
+			System.out.println("game_seq : "+no);
+			System.out.println("input : "+bbView.jtf_input.getText());
+			System.out.println("hint : "+bbView.bbLogic.account(bbView.jtf_input.getText()));
+			System.out.println("dap : "+bbView.bbLogic.com[0]
+					                +""+bbView.bbLogic.com[1]
+					                +""+bbView.bbLogic.com[2]);
+			//VO에 값을 초기화 할때 생성자를 활용해 보세요.
+			BaseballVO bbVO = new BaseballVO(bbView.result[1]
+					                        ,no
+					                        ,bbView.jtf_input.getText()
+					                        ,bbView.bbLogic.account(bbView.jtf_input.getText())
+					                        ,bbView.bbLogic.com[0]
+									     +""+bbView.bbLogic.com[1]
+										 +""+bbView.bbLogic.com[2]);
+			System.out.println("mem_id : "+bbVO.getMem_id());
+			System.out.println("game_seq : "+bbVO.getGame_seq());
+			System.out.println("input : "+bbVO.getInput());
+			System.out.println("hint : "+bbVO.getHint());
+			System.out.println("dap : "+bbVO.getDap());
 			bbView.jtf_input.setText("");
+			int result = bbView.bbLogic.history(bbVO);
+			if(result == 1) {
+				JOptionPane.showMessageDialog
+				(bbView.jf_bbgame,"등록성공");
+			}else if(result == 0) {
+				JOptionPane.showMessageDialog
+				(bbView.jf_bbgame,"등록실패");
+			}
 		}
 	}
 
