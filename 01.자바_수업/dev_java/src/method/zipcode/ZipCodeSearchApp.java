@@ -194,10 +194,14 @@ public class ZipCodeSearchApp implements ItemListener, ActionListener, FocusList
 		//String은 원본이 바뀌지 않음.
 		StringBuilder sb = new StringBuilder();
 		//자바코드는 이클립스에서 디버깅하고 select문 토드에서 디버깅하기
-		sb.append("SELECT               ");
-	    sb.append("       distinct(zdo) zdo");
-	    sb.append("  FROM zipcode_t     ");
-	    sb.append(" ORDER BY zdo asc     ");
+		sb.append("SELECT '전체' zdo FROM dual      ");
+		sb.append("UNION ALL                        ");
+		sb.append("SELECT zdo                       ");
+		sb.append("  FROM (                         ");
+		sb.append("        SELECT distinct(zdo) zdo ");
+		sb.append("          FROM zipcode_t         ");
+		sb.append("        ORDER BY zdo asc         ");
+		sb.append("       )                         ");
 	    try {
 			con = dbMgr.getConnection();
 			pstmt = con.prepareStatement(sb.toString());
