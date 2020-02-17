@@ -2,6 +2,7 @@ package method.temparature;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -45,8 +47,16 @@ public class SeoulTempView implements ActionListener {
 	JTableHeader    jth_zip		= new JTableHeader();
 	JFrame			jf_zip		= new JFrame();//운영체제위에 창을 띄운다.
 	JPanel 			jp_north	= new JPanel();//속지를 만들어 준다.	
+	JComboBox		jcb_year	= null;
+	JComboBox		jcb_month	= null;
+	String 			years[]     = null;//오라클서버 경유해서 반환받는 값으로 초기화
+	SeoulTempDAO    stDao	    = new SeoulTempDAO();
 	//생성자
 	public SeoulTempView() {
+		//오라클 서버 경유하기
+		years=stDao.getYearList();
+		//오라클 서버 경유하고 나서 받은 리턴값으로 콤보박스 인스턴스화 하기
+		jcb_year = new JComboBox(years);
 		//생성자에서 메소드 호출 할 수 있다.
 		initDisplay();
 	}
@@ -69,10 +79,11 @@ public class SeoulTempView implements ActionListener {
 		//이벤트가 일어난 소스와 이벤트를 처리하는 클래스(actionPerformed메소드)를 연결해준다.
 		//jp_north속지에는 중앙에 jtf_dong을 붙이고 동쪽에는 jbtn_search를 붙인다.
 		//이렇게 동,서,남,북,중앙 에 버튼을 배치하고 싶으면 BorderLayout사용함.
-		jp_north.setLayout(new BorderLayout());
+		jp_north.setLayout(new FlowLayout(FlowLayout.LEFT));
 		jp_north.setBackground(Color.red);
-		jp_north.add("Center",jtf_date);
-		jp_north.add("East",jbtn_search);
+		jp_north.add(jcb_year);
+		jp_north.add(jtf_date);
+		jp_north.add(jbtn_search);
 		jbtn_search.addActionListener(this);
 		jtf_date.addActionListener(this);
 		jf_zip.setTitle("서울기후통계 검색");

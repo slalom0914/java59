@@ -14,10 +14,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-public class BaseBallGameView {
+public class BaseBallGameView extends JFrame {
 	BaseBallGameLogic bbLogic = new BaseBallGameLogic();
 	//화면과 관련된 코드 추가 시작
-	JFrame   jf_bbgame = new JFrame();
 	//JMenuBar는 JFrame안에 메뉴바를 추가하기
 	JMenuBar jmb_bbgame = new JMenuBar();
 	//JMenu는 JMenuBar안에 들어갈 메뉴 추가하기
@@ -95,8 +94,8 @@ public class BaseBallGameView {
 		jp_east.add(jbtn_clear);
 		jp_east.add(jbtn_dap);
 		jp_east.add(jbtn_exit);
-		jf_bbgame.add("Center",jp_center);
-		jf_bbgame.add("East",jp_east);
+		add("Center",jp_center);
+		add("East",jp_east);
 		///////////메뉴바 추가 시작////////////
 		jm_game.add(jmi_next);
 		jm_game.add(jmi_clear);
@@ -106,11 +105,11 @@ public class BaseBallGameView {
 		//메뉴를 메뉴바에 붙여요
 		jmb_bbgame.add(jm_game);
 		jmb_bbgame.add(jm_info);		
-		jf_bbgame.setJMenuBar(jmb_bbgame);
+		setJMenuBar(jmb_bbgame);
 		///////////메뉴바 추가  끝 ////////////
-		jf_bbgame.setTitle("야구숫자게임-"+result[0]+"["+result[1]+"]");
-		jf_bbgame.setSize(300, 200);
-		jf_bbgame.setVisible(true);
+		setTitle("야구숫자게임-"+result[0]+"["+result[1]+"]");
+		setSize(300, 200);
+		setVisible(true);
 	}	
 	////////////////////// 화면처리  끝  /////////////////////
 	public static void main(String[] args) {

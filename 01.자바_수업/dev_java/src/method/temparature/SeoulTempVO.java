@@ -11,6 +11,9 @@ public class SeoulTempVO {
 	private double atemp  =0.0;// 
 	private double mitemp =0.0;// 
 	private double matemp =0.0;// 
+	//실제 테이블에 존재하는 컬럼은 아니지만 프로그램에 필요한 변수 선언도 가능함.
+	private String nYear = null;//콤보박스에서 사용자가 선택한 년도 저장하기
+	private String nMonth = null;//콤보박스에서 사용자가 선택한 월 정보 저장하기
 	public String getSdate() {
 		return sdate;
 	}
@@ -40,5 +43,17 @@ public class SeoulTempVO {
 	}
 	public void setMatemp(double matemp) {
 		this.matemp = matemp;
+	}
+	public String getnYear() {
+		return nYear;
+	}
+	public void setnYear(String nYear) {
+		this.nYear = nYear;
+	}
+	public String getnMonth() {
+		return nMonth;
+	}
+	public void setnMonth(String nMonth) {
+		this.nMonth = nMonth;
 	}
 }
