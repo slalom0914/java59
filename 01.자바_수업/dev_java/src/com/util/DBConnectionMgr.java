@@ -66,6 +66,23 @@ public class DBConnectionMgr {
 			System.out.println("Exception : "+e.toString());
 		}
 	}
+	//자바에서는 같은 이름의 메소드를 여러개 만들 수 있다.
+	//1)메소드 오버로딩 - 파라미터갯수
+	//2)메소드 오버라이딩
+	public void freeConnection(Connection con
+			, PreparedStatement pstmt) {
+		try {
+			//사용자원의 생성 역순으로 반환할것.	
+			if(pstmt!=null) {
+				pstmt.close();
+			}
+			if(con!=null) {
+				con.close();
+			}
+		} catch (Exception e) {
+			System.out.println("Exception : "+e.toString());
+		}
+	}
 }
 
 
