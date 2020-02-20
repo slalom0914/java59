@@ -17,7 +17,7 @@ Tomcat Server Start<br>
 WAS(Web Application Server)를 설치 하였습니다.<br>
 방문해주셔서 감사합니다.
 <%
-	String img = "http://192.168.0.17:8000/images/고양이.png";
+	String img = "http://192.168.0.244:8000/images/lion.png";
 %>
 <img src="<% out.print(img);%>" width="500px" height="400px"/>
 <br>

@@ -28,9 +28,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
 import com.util.DBConnectionMgr;
-
-import oracle.jdbc2.JDBCTest;
-import oracle.jdbc2.ZipCodeVO;
+import com.vo.ZipCodeVO;
 //implements 뒤에 오는 이름 모두 인터페이스
 //인터페이스는 추상메소드만 가지고 있다. 메소드 뒤에 세미콜론으로 끝남.
 // void(int) methodA();

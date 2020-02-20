@@ -1,4 +1,4 @@
-package oracle.jdbc2;
+package com.vo;
 /*
  * private<protected<friendly[코딩하지않음]<public 
  */
