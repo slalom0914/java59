@@ -1,4 +1,4 @@
-package method.zipcode;
+package book.chap12;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -15,6 +15,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -32,49 +36,23 @@ import com.util.DBConnectionMgr;
 
 import oracle.jdbc2.JDBCTest;
 import oracle.jdbc2.ZipCodeVO;
-//implements 뒤에 오는 이름 모두 인터페이스
-//인터페이스는 추상메소드만 가지고 있다. 메소드 뒤에 세미콜론으로 끝남.
-// void(int) methodA();
-//인터페이스는 단독으로 인스턴스화를 할 수 없다.
-//ItemListener item = new ItemListener();불법
-//ItemListener item = new ZipCodeSearchApp();합법
-//인터페이스는 반드시 구현체 클래스가 있어야 한다.
-//구현체 클래스가 되기 위한 필요조건은 받드시 추상메소드를 구현해주어야 한다. @Override
+
 public class ZipCodeSearchApp implements ItemListener, ActionListener, FocusListener {
-/* 모든 클래스이 메인메소드가 있다면 이메소드가 시작점이다.
- * 이것보다 먼저 초기화 되는 코드들이 있다. 이것이 전변이다.	
- */
 	String zdos[] = null;
-	//사용자가 콤보박스에서 선택한 정보를 담을 변수 선언
-	//선택은 이벤트 쪽에서 처리되므로 전역변수로 해야 그 값을 유지할 수 있고
-	//또 조회메소드에서 그 값을 사용할 수 있을 것이다.
 	String zdo = null;
 	JComboBox jcb_zdo = null;
 	DBConnectionMgr dbMgr = DBConnectionMgr.getInstance();
-	//선언부-전역변수는 초기화를 생성자가 해준다.
 	Connection 			con 	= null;//전역변수 선언하기 - 클래스() 전역에서 사용가능함.
-	//오라클 서버에 쿼리문을 전달하고 너가 좀 처리해 줄래
 	PreparedStatement 	pstmt 	= null;
-	//오라클에는 일꾼이 살고 있는데 이름은 옵티마이저라고 함.
-	//데이터를 찾을 때는 커서를 움직이면서 조회결과가 존재하는지 확인하고 그 로우에 있는 값들을
-	//RAM메모리 영역에 올린다.  커서를 조작하면서 해당 로우에 있는 값을 꺼낼 수 있다.
 	ResultSet 		rs  		= null;
 	JTextField 		jtf_dong 	= new JTextField("동이름을 입력하세요.");
 	JButton 		jbtn_search = new JButton("조회");
 	JButton 		jbtn_del 	= new JButton("삭제");
-	//오라클에서 조회한 결과를 담을 클래스 선언 및 생성하기
-	//테이블의  헤더 설정하기
 	String 			cols[]      = {"주소","우편번호"};
 	String 		    data[][] 	= new String[0][2];
-	//생성자에는 파라미터를 가질 수 있다.
-	//첫번째 파라미터는 데이터영역을 표시하는 주소번지
-	//두번째 파라미터는 테이블 헤더영역에 해당하는 주소번지
-	//파라미터의 갯수에 따라서 서로 다른 생성자를 선언하는 것도 가능하다는 것인가?
 	DefaultTableModel dtm_zip	= new DefaultTableModel(data,cols);
-	//테이블 양식 그려줌.
 	JTable		    jt_zip 		= new JTable(dtm_zip);
 	JScrollPane     jsp_zip		= new JScrollPane(jt_zip);
-	//JTableHeader
 	JTableHeader    jth_zip		= new JTableHeader();
 	JFrame			jf_zip		= new JFrame();//운영체제위에 창을 띄운다.
 	JPanel 			jp_north	= new JPanel();//속지를 만들어 준다.
@@ -90,7 +68,7 @@ public class ZipCodeSearchApp implements ItemListener, ActionListener, FocusList
 	public ZipCodeSearchApp(String str, int i) {
 	}
 	//새로 고침 기능을 구현해 보자. - SELECT
-	public Vector<ZipCodeVO> refreshData(String zDO,String myDong) {
+	public List<Map<String,Object>> refreshData(String zDO,String myDong) {
 		con = dbMgr.getConnection();
 		System.out.println("refreshData호출 성공"+myDong+", "+zDO);
 		StringBuilder sql = new StringBuilder();
@@ -104,7 +82,7 @@ public class ZipCodeSearchApp implements ItemListener, ActionListener, FocusList
 			sql.append(" AND dong LIKE '%'||?||'%'");		
 		}
 		int i=1;
-		Vector<ZipCodeVO> v = null;
+		List<Map<String,Object>> addrList = new ArrayList<>();
 		try {
 			pstmt = con.prepareStatement(sql.toString());
 			if(zDO!=null && zDO.length()>0) {
@@ -115,44 +93,33 @@ public class ZipCodeSearchApp implements ItemListener, ActionListener, FocusList
 			}
 			System.out.println("sql:"+sql.toString());
 			rs = pstmt.executeQuery();//오라클 서버에게 처리를 요청함.
-			v = new Vector<>();
-			ZipCodeVO zcVOS[] = null; 
-			ZipCodeVO zcVO = null; 
+			Map<String,Object> rMap = null; 
 			while(rs.next()) {//커서 이동, 커서이동
 				//System.out.println("while문 : " +rs.next());//커서이동
-				zcVO = new ZipCodeVO();
-				zcVO.setAddress(rs.getString("address"));
-				zcVO.setZipcode(rs.getInt("zipcode"));
-				v.add(zcVO);
+				rMap = new HashMap<>();
+				rMap.put("address",rs.getString("address"));
+				rMap.put("zipcode",rs.getInt("zipcode"));
+				addrList.add(rMap);
 			}
-			zcVOS  = new ZipCodeVO[v.size()];
-			v.copyInto(zcVOS);//벡터 자료구조에 들어있는 정보를 복사하기	
-			System.out.println("v.size():"+v.size()+", "+zcVOS.length);
-			if(v.size()>0) {//조회된 결과가 있니?
+			System.out.println("addrList.size():"+addrList.size());
+			if(addrList.size()>0) {//조회된 결과가 있니?
 				while(dtm_zip.getRowCount() > 0) {
 					dtm_zip.removeRow(0);
 				}
-			//조회결과가 있다면 데이터를 DefaultTableModel에 담아주어야 합니다.
-			//그래야 JTable에서 그리드에 출력된 결과를 볼 수 있기 때문입니다.
-			//그런데 컬럼을 하나씩 각각 개발자가 일일이 초기화 해주는 건 너무 불편합니다.
-				for(int x=0;x<v.size();x++) {
-			//그래서 for문 안에서 벡터를 하나 더 생성했어요 
-			//addRow라는 메소드가 있는데 이 파라미터에 Vector를 넣으면 한개로우씩
-			//추가 해준다고 합니다.		
+				for(int x=0;x<addrList.size();x++) {	
+					Map<String,Object> map = addrList.get(x);
 					Vector oneRow = new Vector();
-					oneRow.add(0, zcVOS[x].getAddress());
-					oneRow.add(1, zcVOS[x].getZipcode());
+					oneRow.add(0, map.get("address"));
+					oneRow.add(1, map.get("zipcode"));
 					dtm_zip.addRow(oneRow);
 				}
 			}
 		} catch (SQLException se) {
-			//테이블이 존재하지 않습니다.-테이블을 만들지 않았네
-			//혹은 부적합한 식별자 - 컬럼명이 맞지 않습니다.
 			System.out.println("[[query]]"+sql);
 		} catch(Exception e) {//그 밖에 문제가 발생할 경우 잡아준다.
 			System.out.println("[[Exception]]"+e);
 		}
-		return v;
+		return addrList;
 	}
 	//화면그리기
 	public void initDisplay() {
