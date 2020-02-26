@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 
 public class BookApp extends JFrame implements ActionListener {
 	//선언부
+	static BookApp ba = null;
 	//파라미터가 없는 생성자는 디폴트로 지원해주지만 있는 경우는 예측불가이므로 지원불가함.
 	BookDialog bd = new BookDialog();
 	//jp_north속지는 JFrame의 북쪽에 배치
@@ -47,8 +48,9 @@ public class BookApp extends JFrame implements ActionListener {
 	}
 	
 	public static void main(String[] args) {
+		JFrame.setDefaultLookAndFeelDecorated(true);
 		//insert here
-		BookApp ba = new BookApp();
+		ba = new BookApp();
 		ba.initDisplay();
 	}
 //JButton에 대한 이벤트를 지원하는 인터페이스가 ActionListener임.
@@ -62,7 +64,7 @@ public class BookApp extends JFrame implements ActionListener {
 		if(jbtn_ins==obj) {
 			System.out.println("입력호출 성공");
 			//insert here
-			bd.set("입력", true, true, null);
+			bd.set("입력", true, true, null, ba);
 			//initDisplay를 호출한 이유는 setTitle("입력")과 setVisible(true)
 			//때문이었다. 그런데 그  둘을 set메소드로 이전하였다.
 		}
@@ -73,18 +75,22 @@ public class BookApp extends JFrame implements ActionListener {
 			Map<String,Object> rMap = null;
 			rMap = new HashMap<>();
 			rMap.put("b_title", "자바의 정석");
-			bd.set(jbtn_upd.getText(), true, true, rMap);
+			bd.set(jbtn_upd.getText(), true, true, rMap, ba);
 		}
 		else if(jbtn_sel==obj) {
 			System.out.println("상세조회호출 성공");
 			//insert here
 			Map<String,Object> rMap = null;
-			bd.set(jbtn_sel.getText(), true, false, rMap);
+			bd.set(jbtn_sel.getText(), true, false, rMap, null);
 		}
 		else if(jbtn_del==obj) {
 			System.out.println("삭제호출 성공");
 		}
 		
+	}
+
+	public void refreshData() {
+		System.out.println("refreshData 호출 성공");
 	}
 
 }
