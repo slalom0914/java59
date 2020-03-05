@@ -15,7 +15,9 @@ public class TimeServerThread extends Thread {
 			oos = new ObjectOutputStream(ts.socket.getOutputStream());
 			//클라이언트가 말한 내용을 듣기
 			ois = new ObjectInputStream(ts.socket.getInputStream());
-			oos.writeObject(time);
+			//TimeServer에서 정의한 setTimer메소드에서 현재 장치에 시간정보 가져오기
+			time = ts.setTimer();
+			//oos.writeObject(time);
 			//내가 입장하기 전에 있던 친구들에게 전송하기
 			for(TimeServerThread tst:ts.globalList) {
 				this.send(time);
@@ -29,7 +31,7 @@ public class TimeServerThread extends Thread {
 	//현재 서버에 접속한 모든 사용자에게 시간 정보 방송하기 구현
 	public void broadCasting(String msg) {
 		//현재 서버에 몇사람이 있는지 출력하기
-		ts.jta_log.append("현재 인원수:"+ts.globalList.size());
+		ts.jta_log.append("현재 인원수:"+ts.globalList.size()+"\n");
 		synchronized(this) {//다른 스레드가 인터셉트 하는 것을 방어하기 위해 동기화처리함
 			for(TimeServerThread tst:ts.globalList) {
 				tst.send(msg);
@@ -48,6 +50,8 @@ public class TimeServerThread extends Thread {
 	public void run() {
 		while(true) {
 			try {
+				//TimeServer에서 정의한 setTimer메소드에서 현재 장치에 시간정보 가져오기
+				time = ts.setTimer();				
 				oos.writeObject(time);
 				sleep(1000);//1초 동안 지연시키기		
 			} catch (IOException ie) {

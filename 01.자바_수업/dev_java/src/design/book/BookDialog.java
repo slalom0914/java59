@@ -31,6 +31,8 @@ public class BookDialog extends JDialog implements ActionListener {
 	JButton jbtn_close 	= new JButton("닫기");
 	JScrollPane jsp = new JScrollPane(jp_center);
 	public BookDialog() {
+		jbtn_save.addActionListener(this);
+		jbtn_close.addActionListener(this);
 	}
 	//입력과 수정시에는 컬럼값을 수정 가능하도록 하고
 	//조회시에는 불가능하게 하는 메소드를 선언해 봐요.
@@ -54,8 +56,6 @@ public class BookDialog extends JDialog implements ActionListener {
 		this.setVisible(isView);
 	}	
 	public void initDisplay() {
-		jbtn_save.addActionListener(this);
-		jbtn_close.addActionListener(this);
 		jp_center.setLayout(null);
 		jp_south.setLayout(new FlowLayout(FlowLayout.CENTER));
 		jp_south.add(jbtn_save);

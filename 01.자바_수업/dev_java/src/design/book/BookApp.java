@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class BookApp extends JFrame implements ActionListener {
@@ -24,8 +25,15 @@ public class BookApp extends JFrame implements ActionListener {
 	JButton jbtn_ins = new JButton("입력");
 	JButton jbtn_upd = new JButton("수정");
 	JButton jbtn_del = new JButton("삭제");
+	JLabel jlb_time = new JLabel("현재시간",JLabel.CENTER);
+	TimeClient tc = null;
 	//화면 그리기
 	public void initDisplay() {
+		//실제로 타임서버로 부터 시간정보를 듣기는 TimeClient에서 진행되지만
+		//생성자의 파라미터를 통해서 BookApp jlb_time 원본의 주소번지를
+		//넘겼으므로 TimeClient에서는 원본에 직접 써주면 화면에 보임.
+		tc = new TimeClient(jlb_time);
+		tc.start();
 		//아래코드가 JFrame의 자원을 회수함.
 		//부모자원이 회수될 때 JDialog도 같이 회수됨.
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -43,12 +51,17 @@ public class BookApp extends JFrame implements ActionListener {
 		jp_north.add(jbtn_upd);
 		jp_north.add(jbtn_del);
 		this.add("North",jp_north);
+		this.add("South",jlb_time);
 		this.setSize(700, 500);
 		this.setVisible(true);
 	}
 	
 	public static void main(String[] args) {
 		JFrame.setDefaultLookAndFeelDecorated(true);
+		TimeServer ts = new TimeServer();
+		ts.initDisplay();//화면을 그리고 난 뒤 스레드 대기를 타도록 해야함.
+		Thread th = new Thread(ts);
+		th.start();//스레드의 run메소드를 호출하는 메소드		
 		//insert here
 		ba = new BookApp();
 		ba.initDisplay();
