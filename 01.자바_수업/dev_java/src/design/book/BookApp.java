@@ -10,16 +10,35 @@ import java.util.Map;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.JToolBar;
 
 public class BookApp extends JFrame implements ActionListener {
 	//선언부
+	//메뉴바 추가하기
+	JMenuBar 	jmb_book 	= new JMenuBar();
+	JMenu    	jm_file		= new JMenu("File");
+	JMenuItem	jmi_db   	= new JMenuItem("DB연결");
+	JMenuItem	jmi_open	= new JMenuItem("Open File");
+	JSeparator  js_file		= new JSeparator();
+	JMenuItem	jmi_exit	= new JMenuItem("Exit");
+	JMenu    	jm_edit		= new JMenu("Edit");
+	JMenuItem   jmi_all		= new JMenuItem("전체조회");
+	JMenuItem   jmi_sel		= new JMenuItem("상세조회");
+	JMenuItem   jmi_ins		= new JMenuItem("입력");
+	JMenuItem   jmi_upd		= new JMenuItem("수정");
+	JMenuItem   jmi_del		= new JMenuItem("삭제");
 	static BookApp ba = null;
 	//파라미터가 없는 생성자는 디폴트로 지원해주지만 있는 경우는 예측불가이므로 지원불가함.
 	BookDialog bd = new BookDialog();
 	//jp_north속지는 JFrame의 북쪽에 배치
 	JPanel jp_north = new JPanel();
 	//아래 버튼은 jp_north속지에 차례대로 배치-배치는 왼쪽부터 
+	JToolBar jtbar	 = new JToolBar();
 	JButton jbtn_all = new JButton("전체조회");
 	JButton jbtn_sel = new JButton("상세조회");
 	JButton jbtn_ins = new JButton("입력");
@@ -29,11 +48,23 @@ public class BookApp extends JFrame implements ActionListener {
 	TimeClient tc = null;
 	//화면 그리기
 	public void initDisplay() {
+		jm_file.add(jmi_db);
+		jm_file.add(jmi_open);
+		jm_file.add(js_file);
+		jm_file.add(jmi_exit);
+		jm_edit.add(jmi_all);
+		jm_edit.add(jmi_sel);
+		jm_edit.add(jmi_ins);
+		jm_edit.add(jmi_upd);
+		jm_edit.add(jmi_del);
+		jmb_book.add(jm_file);
+		jmb_book.add(jm_edit);
+		this.setJMenuBar(jmb_book);
 		//실제로 타임서버로 부터 시간정보를 듣기는 TimeClient에서 진행되지만
 		//생성자의 파라미터를 통해서 BookApp jlb_time 원본의 주소번지를
 		//넘겼으므로 TimeClient에서는 원본에 직접 써주면 화면에 보임.
-		tc = new TimeClient(jlb_time);
-		tc.start();
+		//tc = new TimeClient(jlb_time);
+		//tc.start();
 		//아래코드가 JFrame의 자원을 회수함.
 		//부모자원이 회수될 때 JDialog도 같이 회수됨.
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -45,12 +76,12 @@ public class BookApp extends JFrame implements ActionListener {
 		jp_north.setLayout(new FlowLayout(FlowLayout.LEFT));
 		//insert here
 		this.setTitle("도서관리시스템");
-		jp_north.add(jbtn_all);
-		jp_north.add(jbtn_sel);
-		jp_north.add(jbtn_ins);
-		jp_north.add(jbtn_upd);
-		jp_north.add(jbtn_del);
-		this.add("North",jp_north);
+		jtbar.add(jbtn_all);
+		jtbar.add(jbtn_sel);
+		jtbar.add(jbtn_ins);
+		jtbar.add(jbtn_upd);
+		jtbar.add(jbtn_del);
+		this.add("North",jtbar);
 		this.add("South",jlb_time);
 		this.setSize(700, 500);
 		this.setVisible(true);
@@ -59,9 +90,9 @@ public class BookApp extends JFrame implements ActionListener {
 	public static void main(String[] args) {
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		TimeServer ts = new TimeServer();
-		ts.initDisplay();//화면을 그리고 난 뒤 스레드 대기를 타도록 해야함.
-		Thread th = new Thread(ts);
-		th.start();//스레드의 run메소드를 호출하는 메소드		
+		//ts.initDisplay();//화면을 그리고 난 뒤 스레드 대기를 타도록 해야함.
+		//Thread th = new Thread(ts);
+		//th.start();//스레드의 run메소드를 호출하는 메소드		
 		//insert here
 		ba = new BookApp();
 		ba.initDisplay();

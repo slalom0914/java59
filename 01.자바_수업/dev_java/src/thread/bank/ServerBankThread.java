@@ -95,7 +95,7 @@ public class ServerBankThread extends Thread {
 	public String setTimer() {
 		Calendar cal = Calendar.getInstance();
 		int yyyy = cal.get(Calendar.YEAR);
-		int mm = cal.get(Calendar.MONTH);
+		int mm = cal.get(Calendar.MONTH)+1;
 		int day =  cal.get(Calendar.DAY_OF_MONTH);
 		int hour = cal.get(Calendar.HOUR_OF_DAY);//1~24
 		int min = cal.get(Calendar.MINUTE);
