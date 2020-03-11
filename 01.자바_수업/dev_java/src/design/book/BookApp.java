@@ -70,7 +70,8 @@ public class BookApp extends JFrame implements ActionListener {
 	DefaultTableModel dtm_book = new DefaultTableModel(data, cols);
 	JTable jtb_book = new JTable(dtm_book);
 	JScrollPane jsp_book = new JScrollPane(jtb_book);
-	BookController bCtrl = new BookController();
+	BookDao bDao = new BookDao();
+	BookController bCtrl = new BookController(this);
 	//이벤트 소스와 이벤트 핸들러 클래스 연결하기
 	public void eventMapping() {
 		//db연결 버튼 이벤트 처리
@@ -156,8 +157,8 @@ public class BookApp extends JFrame implements ActionListener {
 		//th.start();//스레드의 run메소드를 호출하는 메소드		
 		//insert here
 		ba = new BookApp();
-		ba.initDisplay();
-		ba.eventMapping();
+		ba.initDisplay();//화면처리 부분
+		ba.eventMapping();//이벤트 연결-익명클래스 처리
 	}
 //JButton에 대한 이벤트를 지원하는 인터페이스가 ActionListener임.
 //클래스 뒤에 implements할것
@@ -170,8 +171,8 @@ public class BookApp extends JFrame implements ActionListener {
 		if(jbtn_ins==obj) {
 			System.out.println("입력호출 성공");
 			//insert here
-			Map<String,Object> rMap = new HashMap<>();
-			bd.set("입력", true, true, rMap, ba);
+			BookVO bVO = null;
+			bd.set("입력", true, true, bVO, ba);
 			//initDisplay를 호출한 이유는 setTitle("입력")과 setVisible(true)
 			//때문이었다. 그런데 그  둘을 set메소드로 이전하였다.
 		}
@@ -182,7 +183,7 @@ public class BookApp extends JFrame implements ActionListener {
 			Map<String,Object> rMap = null;
 			rMap = new HashMap<>();
 			rMap.put("b_title", "자바의 정석");
-			bd.set(jbtn_upd.getText(), true, true, rMap, ba);
+			bd.set("수정", true, true, rMap, ba);
 		}
 		else if(jbtn_sel==obj) {
 			System.out.println("상세조회호출 성공");
@@ -202,7 +203,7 @@ public class BookApp extends JFrame implements ActionListener {
 				pbVO.setCommand("detail");
 				pbVO.setB_no(b_no);
 				BookVO rbVO = bCtrl.send(pbVO);
-				bd.set(jbtn_sel.getText(), true, false, rbVO, null);
+				bd.set("상세보기", true, false, rbVO, null);
 			}
 			//bd.set(jbtn_sel.getText(), true, false, rMap, null);
 		}
@@ -221,9 +222,11 @@ public class BookApp extends JFrame implements ActionListener {
 		BookVO pbVO = new BookVO();
 		pbVO.setCommand("all");
 		bookList = bCtrl.sendALL(pbVO);
-		while(dtm_book.getRowCount()>0) {
-			dtm_book.removeRow(0);
+		//기존에 조회된 결과를 출력한 화면은 삭제처리한다.
+		while(dtm_book.getRowCount()>0) {//bookList.size() 숫자와 동일
+			dtm_book.removeRow(0);//계속 로우수만큼 반복하면서 첫번째 로우 즉 0번 계속 지워준다.
 		}
+		//삭제한 후 다시 출력하기
 		for(int i=0;i<bookList.size();i++) {
 			BookVO bVO = bookList.get(i);
 			Vector<Object> v = new Vector<>();
@@ -231,6 +234,9 @@ public class BookApp extends JFrame implements ActionListener {
 			v.add(bVO.getB_name());
 			v.add(bVO.getB_author());
 			v.add(bVO.getB_publish());
+			//JTable에 추가하는 것이 아니다.-JTable은 양식일 뿐이고
+			//실제 데이터를 갖는 클래스는 DefaultTableModel이다.-DataSet지원함.
+			//한개로우는 Vector에 담고 그 벡터를 for문 안에서 반복 추가해줌.
 			dtm_book.addRow(v);
 		}
 	}//////////////end of refreshData

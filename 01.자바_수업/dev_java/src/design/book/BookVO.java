@@ -6,6 +6,7 @@ public class BookVO {
 	private String b_author ="";//  
 	private String b_publish="";//  
 	private String b_info   ="";//  
+	private String b_img    ="";//도서 이미지 파일명 추가하기
 	public String command = null;//delete or update or insert or select or all
 	public int 	   result = 0;//INSERT or UPDATE or DELETE 0:실패 1:성공
 	public int getB_no() {

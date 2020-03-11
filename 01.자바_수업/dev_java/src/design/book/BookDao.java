@@ -21,10 +21,35 @@ public class BookDao {
 		result = 1;
 		return result;
 	}
-
+	/*
+	INSERT into book2020(b_no, b_name, b_author
+            , b_publish, b_info)
+       VALUES(seq_book_no.nextval,'1'
+            ,'1','1','1')
+    파라미터로 1을 네개 삽입해서 추가해봄. 4개가 필요함.
+  1 row inserted => 1 실패 하면  0          
+    */        
 	public int bookInsert(BookVO pbVO) {
 		System.out.println("bookInsert");
-		return 0;
+		int result = 0;
+		StringBuilder sql = new StringBuilder();
+		try {
+			sql.append("INSERT into book2020(b_no, b_name, b_author      ");
+		    sql.append("                   , b_publish, b_info)          ");
+		    sql.append("              VALUES(seq_book_no.nextval,?,?,?,?)");			
+		    con = dbMgr.getConnection();
+		    pstmt = con.prepareStatement(sql.toString());
+		    int i = 1;
+		    pstmt.setString(i++, pbVO.getB_name());
+		    pstmt.setString(i++, pbVO.getB_author());
+		    pstmt.setString(i++, pbVO.getB_publish());
+		    pstmt.setString(i++, pbVO.getB_info());
+		    result = pstmt.executeUpdate();
+		    System.out.println("result:"+result);//1이면 입력 성공, 0이면 입력 실패
+		} catch (Exception e) {
+			e.toString();
+		}
+		return result;
 	}
 
 	public int bookUpdate(BookVO pbVO) {
@@ -38,7 +63,7 @@ public class BookDao {
 		StringBuilder sql = new StringBuilder();
 		try {
 			sql.append("SELECT b_no, b_name, b_author, b_publish");
-			sql.append(" ,b_info FROM book2020                         ");
+			sql.append(" ,b_info, b_img FROM book2020                         ");
 			sql.append(" WHERE b_no=?");//2
 			con = dbMgr.getConnection();
 			pstmt = con.prepareStatement(sql.toString());
@@ -63,13 +88,15 @@ public class BookDao {
 		return rbVO;
 	}
 	//전체 조회 구현
-	public List<BookVO> bookList(BookVO pbVO) {
+	public List<BookVO> bookList(BookVO pbVO) {//all, b_no, b_name...
 		System.out.println("bookList() 호출 성공");
 		List<BookVO> bookList = new ArrayList<>();//bookList.size()=0
 		StringBuilder sql = new StringBuilder();
 		try {
 			sql.append("SELECT b_no, b_name, b_author, b_publish");
+			sql.append("     , b_img");
 			sql.append("  FROM book2020                         ");
+			sql.append(" ORDER BY b_no desc                     ");
 			con = dbMgr.getConnection();
 			pstmt = con.prepareStatement(sql.toString());
 			rs = pstmt.executeQuery();
@@ -91,5 +118,21 @@ public class BookDao {
 		}
 		return bookList;
 	}/////////////////////end of bookList
-
+	public static void main(String args[]) {
+		BookDao bd = new BookDao();
+		BookVO pbVO = new BookVO();
+		pbVO.setB_name("1");
+		pbVO.setB_author("2");
+		pbVO.setB_publish("3");
+		pbVO.setB_info("4");
+		int result = 0;
+		result = bd.bookInsert(pbVO);
+		System.out.println("result:"+result);
+	}
 }
+
+
+
+
+
+
