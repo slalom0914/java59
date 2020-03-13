@@ -84,7 +84,7 @@ public class TalkServerThread extends Thread {
 						String afterName = st.nextToken();
 						String message = st.nextToken();
 						this.chatName = afterName;
-						broadCasting(201
+						broadCasting(202
 								+"#"+nickName
 								+"#"+afterName
         						+"#"+message);

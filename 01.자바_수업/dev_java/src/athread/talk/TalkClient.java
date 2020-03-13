@@ -50,6 +50,7 @@ public class TalkClient extends JFrame implements ActionListener {
 	Image back = null;
 	public TalkClient() {
 		jtf_msg.addActionListener(this);
+		jbtn_change.addActionListener(this);
 		jbtn_exit.addActionListener(this);
 	}
 	public void initDisplay() {
