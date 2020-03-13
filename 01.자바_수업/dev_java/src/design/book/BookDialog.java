@@ -1,9 +1,11 @@
 package design.book;
 
+import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +13,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -24,6 +27,7 @@ public class BookDialog extends JDialog implements ActionListener {
  * 그런데 원본을 재사용해야 하므로 set메소드의 파라미터로 받아서 사용할 것이다.
  * 다른 메소드에서 ba를 사용해야 하니까 전역변수로 선언한 다음 초기화를 반드시 할것.	
  */
+	String imgPath = "src\\design\\book\\";
 	//도서이미지 추가해 보기
 	ImageIcon icon = null;	
 	BookApp ba = null;
@@ -39,6 +43,8 @@ public class BookDialog extends JDialog implements ActionListener {
 	JLabel jlb_info = new JLabel("도서소개");
 	JTextArea jta_info = new JTextArea(8,25);
 	JScrollPane jsp_info = new JScrollPane(jta_info);
+	JButton jbtn_file = new JButton("파일찾기");
+	JTextField jtf_file = new JTextField(30);
 	//insert here
 	JLabel jlb_img = new JLabel("이미지없음");
 	JPanel jp_center = new JPanel();
@@ -46,8 +52,11 @@ public class BookDialog extends JDialog implements ActionListener {
 	JButton jbtn_save 	= new JButton("저장");
 	JButton jbtn_close 	= new JButton("닫기");
 	JScrollPane jsp = new JScrollPane(jp_center);
+	JFileChooser jfc = new JFileChooser();
 	BookVO rbVO = null;
+	Container cont = this.getContentPane();
 	public BookDialog() {
+		jbtn_file.addActionListener(this);
 		jbtn_save.addActionListener(this);
 		jbtn_close.addActionListener(this);
 	}
@@ -74,19 +83,15 @@ public class BookDialog extends JDialog implements ActionListener {
 		this.setTitle(title);
 		initDisplay();
 		this.setVisible(isView);
-		icon = new ImageIcon("src\\design\\book\\hon.jpg");
-		//원본의 이미지 크기 정보를 가져온다. -79
-		Image originImg = icon.getImage();//458*626
-		//458*626이미지 크기를 가져와서 300*380 이미지 크기로 재정의
-		Image changeImg = 
-				originImg.getScaledInstance(300, 380
-						, Image.SCALE_SMOOTH);//300*380
-		//원본의 이미지 아이콘 icon -> cicon으로 변경 처리->> 적용됨.
-		//원래 있던 이미지 아이콘을 버리고 새로운 ImageIcon객체를 인스턴스화 하였다.
-		ImageIcon cicon = new ImageIcon(changeImg);
-		//JLabel에 setIcon이라는 메소드의 파라미터로 넘겨서 적용시킨다.
-		jlb_img.setIcon(cicon);
 	}	
+	/************************************************************
+	 * 
+	 * @param title 입력|수정|상세조회
+	 * @param isView true:화면에 보여줌 false:안보여줌.
+	 * @param editable true:수정하게해줌, false:수정못하게함
+	 * @param rbVO null이면 값 없음 , rbVO[new BookVO]이면 값 있음
+	 * @param ba BookApp의 주소번지 원본을 가지고 있음.
+	 ************************************************************/
 	public void set(String title, boolean isView
 			      , boolean editable, BookVO rbVO, BookApp ba) {
 		this.ba = ba;
@@ -133,6 +138,7 @@ public class BookDialog extends JDialog implements ActionListener {
 			setB_author("");
 			setB_publish("");
 			setB_info("");
+			setB_img("");//새로 이미지를 초이스 해야 하니까 비워둔다.
 		}
 	//상세조회와 수정시는  파라미터로 받은 값으로 셋팅한다.
 		else {
@@ -140,6 +146,7 @@ public class BookDialog extends JDialog implements ActionListener {
 			setB_author(rbVO.getB_author());
 			setB_publish(rbVO.getB_publish());
 			setB_info(rbVO.getB_info());
+			setB_img(rbVO.getB_img());
 		}
 	}
 	public void initDisplay() {
@@ -161,8 +168,10 @@ public class BookDialog extends JDialog implements ActionListener {
 		jtf_publish.setBounds(120, 70, 150, 20);
 		jlb_info.setBounds(20, 95, 100, 20);
 		jsp_info.setBounds(120, 95, 300, 160);
+		jbtn_file.setBounds(20, 260, 90, 20);
+		jtf_file.setBounds(120, 260, 350, 20);
 		jlb_img.setBorder(BorderFactory.createEtchedBorder());
-		jlb_img.setBounds(120, 260, 300, 380);
+		jlb_img.setBounds(120, 285, 300, 360);
 		jp_center.add(jlb_name);
 		jp_center.add(jtf_name);
 		jp_center.add(jlb_author);
@@ -171,6 +180,8 @@ public class BookDialog extends JDialog implements ActionListener {
 		jp_center.add(jtf_publish);
 		jp_center.add(jlb_info);
 		jp_center.add(jsp_info);
+		jp_center.add(jbtn_file);
+		jp_center.add(jtf_file);
 		jp_center.add(jlb_img);
 		this.add("Center",jsp);
 		this.add("South",jp_south);
@@ -188,10 +199,25 @@ public class BookDialog extends JDialog implements ActionListener {
 	public void setB_publish(String publish) { jtf_publish.setText(publish);}
 	public String getB_info() {	return jta_info.getText();}
 	public void setB_info(String info) { jta_info.setText(info);}
+	//JLabel에 도서 이미지 출력하기
+	public void setB_img(String img) {
+		icon = new ImageIcon(imgPath+img);
+		//원본의 이미지 크기 정보를 가져온다. -79
+		Image originImg = icon.getImage();//458*626
+		//458*626이미지 크기를 가져와서 300*380 이미지 크기로 재정의
+		Image changeImg = 
+				originImg.getScaledInstance(300, 380
+						, Image.SCALE_SMOOTH);//300*380
+		//원본의 이미지 아이콘 icon -> cicon으로 변경 처리->> 적용됨.
+		//원래 있던 이미지 아이콘을 버리고 새로운 ImageIcon객체를 인스턴스화 하였다.
+		ImageIcon cicon = new ImageIcon(changeImg);
+		//JLabel에 setIcon이라는 메소드의 파라미터로 넘겨서 적용시킨다.
+		jlb_img.setIcon(cicon);		
+	}
 	/*	*/ 
 	public static void main(String[] args) {
 		BookDialog bd = new BookDialog();
-		bd.set("입력",true,true,new HashMap<>(),null);
+		bd.set("입력",true,true,new BookVO(),null);
 		bd.initDisplay();
 	}
 	
@@ -199,13 +225,48 @@ public class BookDialog extends JDialog implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		String command = e.getActionCommand();//이벤트 소스의 라벨
 		//JOptionPane.showMessageDialog(ba, "이벤트 소스 라벨:"+command);
+		if(jbtn_file == e.getSource()) {
+			int ir = jfc.showOpenDialog(this);
+			if(ir == JFileChooser.APPROVE_OPTION) {
+			//선택한 파일을 File객체에 대입
+				File myFile = jfc.getSelectedFile();
+				//절대경로를 가져온다.<-> 상대경로:내가 바라보는 위치를 기준으로 적음
+				//D:\59기수업\01.자바_수업
+				jtf_file.setText(myFile.getAbsolutePath());
+				String cfile = myFile.getAbsolutePath();
+				icon = new ImageIcon(cfile);
+				//원본의 이미지 크기 정보를 가져온다. -79
+				Image originImg = icon.getImage();//458*626
+				//458*626이미지 크기를 가져와서 300*380 이미지 크기로 재정의
+				Image changeImg = 
+						originImg.getScaledInstance(300, 380
+								, Image.SCALE_SMOOTH);//300*380
+				//원본의 이미지 아이콘 icon -> cicon으로 변경 처리->> 적용됨.
+				//원래 있던 이미지 아이콘을 버리고 새로운 ImageIcon객체를 인스턴스화 하였다.
+				ImageIcon cicon = new ImageIcon(changeImg);
+				//JLabel에 setIcon이라는 메소드의 파라미터로 넘겨서 적용시킨다.
+				jlb_img.setIcon(cicon);	
+				cont.revalidate();
+			}
+		}
 		//저장버튼을 누른거니?
-		if("저장".equals(command)) {
+		else if("저장".equals(command)) {
 			//insert here - 입력 인지 수정인지 어떻게 구분하지?
+			int result = 0;
+			//rbVO는 BookVO타입으로 BookApp에서 이벤트 발생시 set메소드의 
+			//4번째 파라미터로 넘어온 값이다.
+			//이 주소번지가 null이면 조회를 하지 않았다는 뜻이고
+			//null이 아니면 조회를 하였다는 의미
 			if(rbVO!=null) {//수정처리하기
-				
+				BookVO pbVO = new BookVO();
+				pbVO.setCommand("update");
+				pbVO.setB_no(rbVO.getB_no());//입력한 도서명 가져오기
+				pbVO.setB_name(getB_name());//입력한 도서명 가져오기
+				pbVO.setB_author(getB_author());//저자이름
+				pbVO.setB_publish(getB_publish());//출판사
+				pbVO.setB_info(getB_info());//출판사
+			    result=ba.bDao.bookUpdate(pbVO);				
 			}else {//입력처리하기
-				int result = 0;
 				BookVO pbVO = new BookVO();
 				pbVO.setB_name(getB_name());//입력한 도서명 가져오기
 				pbVO.setB_author(getB_author());//저자이름

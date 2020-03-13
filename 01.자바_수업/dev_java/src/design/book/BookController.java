@@ -16,27 +16,28 @@ public class BookController {
 		BookVO rbVO = new BookVO();
 		String command = pbVO.getCommand();
 		//insert here
-		if(_DEL.equals(command)) {
+		if(_DEL.equals(command)) {//삭제버튼을 눌렀겠구나?
 		//DELETE FROM book2020 WHERE b_no=1	
 			int result = 0;
 			result = bookApp.bDao.bookDelete(pbVO);
 			rbVO.setResult(result);
 		}
-		else if(_INS.equals(command)) {
+		else if(_INS.equals(command)) {//입력을 원한다
 		//INSERT INTO book2020(b_no, b_name, b_author, b_publish, b_info)
 		//VALUES(?,?,?,?,?)	
 			int result = 0;
 			result = bookApp.bDao.bookInsert(pbVO);
 			rbVO.setResult(result);
 		}
-		else if(_UPD.equals(command)) {
+		else if(_UPD.equals(command)) {//수정하기를 처리
 		//UPDATE book2020 SET b_name=?, b_author=?, b_publish=?
 		// WHERE b_no=2	
 			int result = 0;
 			result = bookApp.bDao.bookUpdate(pbVO);
 			rbVO.setResult(result);
 		}
-		else if(_SEL.equals(command)) {
+		else if(_SEL.equals(command)) {//상세조회 예측
+			System.out.println("상세조회 호출 성공");
 		//SELECT b_no, b_name, b_author, b_publish FROM book2020
 		// WHERE b_no=3	
 			rbVO = bookApp.bDao.bookDetail(pbVO);

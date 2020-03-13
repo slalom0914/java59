@@ -1,0 +1,5 @@
+Server Ready.........
+client info:Socket[addr=/127.0.0.1,port=60897,localport=3002]
+100#나신입
+나신입님이 입장하였습니다.
+201#나신입#안녕

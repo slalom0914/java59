@@ -18,7 +18,32 @@ public class BookDao {
 	public int bookDelete(BookVO pbVO) {
 		int result = 0;
 		System.out.println("bookDelete");
-		result = 1;
+		StringBuilder sql = new StringBuilder();
+		int cnt = 0;
+		try {
+			if(pbVO.getBnos()!=null) {
+				cnt = pbVO.getBnos().size();
+			}
+			sql.append("DELETE FROM book2020 WHERE b_no IN(");
+			for(int x=0;x<cnt;x++) {
+				if(x==cnt-1) {
+					sql.append("?)");					
+				}else {
+					sql.append("?,");					
+				}
+			}
+			System.out.println(sql.toString());
+			con = dbMgr.getConnection();
+			pstmt = con.prepareStatement(sql.toString());
+			int no=0;
+			List<Integer> bnos = pbVO.getBnos();
+			for(int j=0;j<cnt;j++) {
+				pstmt.setInt(++no, bnos.get(j));
+			}
+			result = pstmt.executeUpdate();
+		} catch (Exception e) {
+			System.out.println(e.toString());
+		}
 		return result;
 	}
 	/*
@@ -54,7 +79,27 @@ public class BookDao {
 
 	public int bookUpdate(BookVO pbVO) {
 		System.out.println("bookUpdate");
-		return 0;
+		int result = 0;
+		StringBuilder sql = new StringBuilder();
+		try {
+			sql.append("update book2020");
+		    sql.append("   set b_name=?");
+		    sql.append("      ,b_author=?");
+		    sql.append("      ,b_publish=?");
+		    sql.append(" WHERE b_no=?");			
+		    con = dbMgr.getConnection();
+		    pstmt = con.prepareStatement(sql.toString());
+		    int i = 1;
+		    pstmt.setString(i++, pbVO.getB_name());
+		    pstmt.setString(i++, pbVO.getB_author());
+		    pstmt.setString(i++, pbVO.getB_publish());
+		    pstmt.setInt(i++, pbVO.getB_no());
+		    result = pstmt.executeUpdate();
+		    System.out.println("result:"+result);//1이면 입력 성공, 0이면 입력 실패
+		} catch (Exception e) {
+			e.toString();
+		}
+		return result;		
 	}
 
 	public BookVO bookDetail(BookVO pbVO) {
@@ -70,13 +115,15 @@ public class BookDao {
 			//insert here
 			pstmt.setInt(1, pbVO.getB_no());
 			rs = pstmt.executeQuery();
-			if(rs.next()) {
+			//System.out.println("rs.next():"+rs.next());
+			if(rs.next()) {//false -> true
 				rbVO = new BookVO();
 				rbVO.setB_no(rs.getInt("b_no"));
 				rbVO.setB_name(rs.getString("b_name"));
 				rbVO.setB_author(rs.getString("b_author"));
 				rbVO.setB_publish(rs.getString("b_publish"));
 				rbVO.setB_info(rs.getString("b_info"));
+				rbVO.setB_img(rs.getString("b_img"));
 			}
 			System.out.println("rbVO:"+rbVO.getB_info());
 		} catch (SQLException se) {
@@ -121,13 +168,26 @@ public class BookDao {
 	public static void main(String args[]) {
 		BookDao bd = new BookDao();
 		BookVO pbVO = new BookVO();
+		List<Integer> bnos = new ArrayList<>();
+		bnos.add(7);
+		bnos.add(8);
+		bnos.add(9);
+		pbVO.setBnos(bnos);
+		int result = bd.bookDelete(pbVO);
+		System.out.println("result:"+result);
+		/*
+		pbVO.setB_no(3);
+		BookVO rbVO = bd.bookDetail(pbVO);
+		System.out.println(rbVO.getB_img());
+		BookVO pbVO = new BookVO();
 		pbVO.setB_name("1");
 		pbVO.setB_author("2");
 		pbVO.setB_publish("3");
 		pbVO.setB_info("4");
 		int result = 0;
-		result = bd.bookInsert(pbVO);
+		result = bd.bookInsert(pbVO);		
 		System.out.println("result:"+result);
+		*/
 	}
 }
 

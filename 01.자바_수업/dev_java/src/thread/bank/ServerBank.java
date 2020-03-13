@@ -47,7 +47,7 @@ public class ServerBank extends JFrame implements Runnable {
 	//이 정보를 넘겨받으면 그 안에 클라이언트 정보가 담김.
 	//스레드가 생성되었을 때 그 때 Vector안에 add처리할 것.-그래야 그사람 정보를 유지가능
 	//담는 작업은 스레드가 생성되었을 때 거의 동시에 일어나는 사건이므로 생성자 안에서 처리함.
-	List<ServerBankThread> globalList = null;
+	List<ServerBankThread> globalList = null;//멀티스레드
 	ServerBankThread sbt = null;
 	CustomerDao cDao = new CustomerDao();
 	/////////////////전역변수 선언하기   끝//////////////////	

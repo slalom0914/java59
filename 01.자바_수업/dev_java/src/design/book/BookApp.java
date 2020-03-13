@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.net.URL;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -180,10 +181,22 @@ public class BookApp extends JFrame implements ActionListener {
 			System.out.println("수정호출 성공");
 			//insert here
 			//select처리한 후 한 개 로우를 받아서 Map에 저장
-			Map<String,Object> rMap = null;
-			rMap = new HashMap<>();
-			rMap.put("b_title", "자바의 정석");
-			bd.set("수정", true, true, rMap, ba);
+			BookVO rbVO = null;
+			int index = -1;
+			index = jtb_book.getSelectedRow();
+			if(index >=0) {//선택한 로우값이 있다.
+				//파라미터로 도서번호를 넘겨야 한다.
+				BookVO pbVO = new BookVO();
+				pbVO.setCommand("detail");
+				int b_no = Integer.parseInt(
+						dtm_book.getValueAt(index, 0).toString());
+				pbVO.setB_no(b_no);
+				rbVO = bCtrl.send(pbVO);
+			}else {//선택한 로우가 없다.
+				JOptionPane.showMessageDialog(this, "수정할 데이터를 선택하세요");
+				return;//actionPerformd를 탈출함.				
+			}
+			bd.set("수정", true, true, rbVO, ba);
 		}
 		else if(jbtn_sel==obj) {
 			System.out.println("상세조회호출 성공");
@@ -192,7 +205,7 @@ public class BookApp extends JFrame implements ActionListener {
 			int indexs[] = jtb_book.getSelectedRows();
 			if(indexs.length==0) {
 				JOptionPane.showMessageDialog
-				(this, "상세조회할 로우를 선하세요.");
+				(this, "상세조회할 로우를 선택하세요.");
 				return;
 			}
 			else {
@@ -202,6 +215,8 @@ public class BookApp extends JFrame implements ActionListener {
 				BookVO pbVO = new BookVO();
 				pbVO.setCommand("detail");
 				pbVO.setB_no(b_no);
+				System.out.println("command:"+pbVO.getCommand());
+				System.out.println("b_no:"+pbVO.getB_no());
 				BookVO rbVO = bCtrl.send(pbVO);
 				bd.set("상세보기", true, false, rbVO, null);
 			}
@@ -209,6 +224,37 @@ public class BookApp extends JFrame implements ActionListener {
 		}
 		else if(jbtn_del==obj) {
 			System.out.println("삭제호출 성공");
+			int indexs[] = jtb_book.getSelectedRows();
+			if(indexs.length==0) {
+				JOptionPane.showMessageDialog
+				(this, "삭제할 로우를 선택하세요.");
+				return;
+			}else {
+				List<Integer> bnos = new ArrayList<>();
+				for(int i=0;i<dtm_book.getRowCount();i++) {
+					//선택된 로우인지 체크
+					if(jtb_book.isRowSelected(i)) {
+						int b_no = Integer.parseInt(
+								dtm_book.getValueAt(i, 0).toString());						
+						bnos.add(b_no);
+					}
+				}
+				BookVO pbVO = new BookVO();
+				pbVO.setCommand("delete");//command="delete"
+				pbVO.setBnos(bnos);//List담았다.
+				int result = 0;
+				BookVO rbVO = new BookVO();				
+				rbVO = bCtrl.send(pbVO);
+				result = rbVO.getResult();
+				if(result>0) {
+					JOptionPane.showMessageDialog(this, "삭제 처리되었습니다.");
+					refreshData();
+				}
+				else {
+					JOptionPane.showMessageDialog(this, "실패하였습니다.");
+					refreshData();
+				}
+			}
 		}
 		else if(jbtn_all==obj) {
 			System.out.println("전체 조회 호출 성공");
